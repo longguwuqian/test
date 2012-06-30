@@ -286,12 +286,10 @@ void floyed()
                     dist_list[i][j]=dist_list[i][k]+dist_list[k][j];
                     shortest[i][j]=shortest[i][k]+shortest[k][j];
                     path_list[i][j].count=path_list[i][k].count+path_list[k][j].count-1;
-
                     for(m=0; m<path_list[i][k].count; m++)
                         path_list[i][j].path[m]=path_list[i][k].path[m];
                     for(m=0; m<path_list[k][j].count; m++)
                         path_list[i][j].path[m+path_list[i][k].count]=path_list[k][j].path[m+1];
-
                 }
             }
     }
@@ -317,17 +315,16 @@ void floyed()
         }
     }
     printf("end");
-
 }
 
 int main()
 {
+    int menu;
     readviews();
     readways();
     readlines();
 
     while(1) {
-        int menu;
         printf("\n              The railway system         \n");
         printf("***************************************************\n");
         printf("                        1、添加新的车站\n");
@@ -366,7 +363,6 @@ int main()
             do {
                 floyed();
             } while(user_says_yes("\n是否继续?(yes/no)"));
-
             break;
         case 5: {
             printf("thanks!");
