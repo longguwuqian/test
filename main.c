@@ -13,12 +13,13 @@
 void stdin_flush()
 {
     static int c;
-    while ((c == getchar()) != '\n' && c != EOF);
+    while((c = getchar()) != '\n' && c != EOF);
 }
 
-int user_says_yes()
+int user_says_yes(char *message)
 {
     static char ans[5];
+    if (message != NULL) printf("%s", message);
     while(1) {
         scanf("%4s", ans);
         stdin_flush();
@@ -32,6 +33,12 @@ int user_says_yes()
     }
 }
 
+#define CHECK_FOPEN(ptr) do { \
+        if(NULL == ptr) { \
+            fprintf(stderr,"LINE %d:无法打开文件!\n",__LINE__); \
+            exit(EXIT_FAILURE); \
+        } \
+    }while (0)
 
 int way_count;
 int line_count;
@@ -71,27 +78,23 @@ void readviews()
     FILE *fp;
     int i;
 
-    if((fp=fopen("views","rb"))==NULL) {
-        printf("\n不能打开文件，按任意键退出！");
-        exit(0);
-    }
+    fp=fopen("views","rb");
+    CHECK_FOPEN(fp);
     printf("id            name              code           shortname        LName   \n");
 
     for(i=0; fread(&views[i],sizeof(struct  view_info),1,fp)!=0; i++) {//文件中的信息赋给station_info结构体，并且把车站信息输出到终端
         printf("%d%-10s%d%-10s%-10s\n",views[i].id,views[i].name,views[i].code,views[i].shortname,views[i].LName);
-        view_count=i+1;
 
     }
+    view_count=i;
     fclose(fp);
 }
 void readways()
 {
     FILE *fp;
     int i;
-    if((fp=fopen("ways","rb"))==NULL) {
-        printf("\n不能打开文件，按任意键退出!");
-        exit(0);
-    }
+    fp=fopen("ways","rb");
+    CHECK_FOPEN(fp);
     printf("station1 station2 dist");
     for(i=0; i<SIZE_way; i++) {
         fscanf(fp,"%d%d%d",&ways[i].station1,&ways[i].station2,&ways[i].dist);
@@ -105,10 +108,8 @@ void readlines()
     FILE *fp;
     int i;
 
-    if((fp=fopen("lines","rb"))==NULL) {
-        printf("\n不能打开文件，按任意键退出!");
-        exit(0);
-    }
+    fp=fopen("lines","rb");
+    CHECK_FOPEN(fp);
 
     printf("Lid                  LName                  start_id          end_id             dist       sign");
     for(i=0; fread(&lines[i],sizeof(struct  line_info),1,fp)!=0; i++) {
@@ -122,14 +123,11 @@ void search()
 {
     FILE *fp;
     int i;
-    char sta_name[200];
+    char sta_name[256];
     printf("请输入车站名：");
-    scanf("%s",sta_name);
-//    stdin_flush();
-    if((fp=fopen("views","rb"))==NULL) {
-        printf("不能打开文件，按任意键退出!\n");
-        exit(0);
-    }
+    scanf("%250s", sta_name);
+    fp=fopen("views","rb");
+    CHECK_FOPEN(fp);
     for(i=0; i<view_count; i++) {
         fread(&views[i],sizeof(struct view_info),1,fp);
     }
@@ -181,10 +179,8 @@ void addview()
 void addway()
 {
     FILE *fp;
-    if((fp=fopen("ways","ab"))==NULL) {
-        printf("\n不能打开文件，按任意键退出!");
-        exit(0);
-    }
+    fp=fopen("ways","ab");
+    CHECK_FOPEN(fp);
 
     printf("请输入新道路的信息\n");
     printf("station1：\n");
@@ -210,10 +206,8 @@ void addline()
 {
     FILE *fp;
 
-    if((fp=fopen("lines","ab"))==NULL) {
-        printf("\n不能打开文件，按任意键退出!");
-        exit(0);
-    }
+    fp=fopen("lines","ab");
+    CHECK_FOPEN(fp);
 
     printf("请输入新铁路线的信息:\n");
     printf("Lid:\n");
@@ -345,33 +339,33 @@ int main()
 
         printf("请输入数字（1-5）：");
         scanf("%d",&menu);
+        stdin_flush();
         while(menu<1||menu>5) {
             printf("错误！请再次输入：");
             scanf("%d",&menu);
-
+            stdin_flush();
         }
         switch(menu) {
         case 1:
             do {
                 addview();
                 addway();
-            } while(user_says_yes());
+            } while(user_says_yes("\n是否继续?(yes/no)"));
             break;
         case 2:
             do {
                 addline();
-            } while(user_says_yes());
+            } while(user_says_yes("\n是否继续?(yes/no)"));
             break;
         case 3:
             do {
                 search();
-            } while(user_says_yes());
-
+            } while(user_says_yes("\n是否继续?(yes/no)"));
             break;
         case 4:
             do {
                 floyed();
-            } while(user_says_yes());
+            } while(user_says_yes("\n是否继续?(yes/no)"));
 
             break;
         case 5: {
