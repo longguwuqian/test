@@ -16,6 +16,23 @@ void stdin_flush()
     while ((c == getchar()) != '\n' && c != EOF);
 }
 
+int user_says_yes()
+{
+    static char ans[5];
+    while(1) {
+        scanf("%4s", ans);
+        stdin_flush();
+        if( ans[3] == '\0'                   &&
+            (ans[2] == 's' || ans[2] == 'S') &&
+            (ans[1] == 'e' || ans[1] == 'E') &&
+            (ans[0] == 'y' || ans[0] == 'Y')  ) return 1;
+        if( ans[2] == '\0'                   &&
+            (ans[1] == 'o' || ans[1] == 'O') &&
+            (ans[0] == 'n' || ans[0] == 'N')  ) return 0;
+    }
+}
+
+
 int way_count;
 int line_count;
 int view_count;
@@ -106,9 +123,9 @@ void search()
     FILE *fp;
     int i;
     char sta_name[200];
-    stdin_flush();
     printf("请输入车站名：");
     scanf("%s",sta_name);
+//    stdin_flush();
     if((fp=fopen("views","rb"))==NULL) {
         printf("不能打开文件，按任意键退出!\n");
         exit(0);
@@ -134,7 +151,6 @@ void addview()
     int i;
 
     printf("请输入新车站的信息\n");
-    stdin_flush();
     printf("id:");
     scanf("%d",&views[view_count].id);
     stdin_flush();
@@ -149,6 +165,7 @@ void addview()
     stdin_flush();
     printf("LName:");
     scanf("%s",views[view_count].LName);
+    stdin_flush();
     if((fp=fopen("views","ab"))==NULL) {
 
         printf("\n不能打开文件，按任意键退出!");
@@ -170,7 +187,6 @@ void addway()
     }
 
     printf("请输入新道路的信息\n");
-    stdin_flush();
     printf("station1：\n");
     scanf("%d",&ways[way_count].station1);
     stdin_flush();
@@ -179,6 +195,7 @@ void addway()
     stdin_flush();
     printf("dist:\n");
     scanf("%d",&ways[way_count].dist);
+    stdin_flush();
 
     fprintf(fp,"%d                       %d                   %d",ways[way_count].station1,ways[way_count].station2,ways[way_count].dist);
     //将新的路径信息输入到文件中
@@ -199,7 +216,6 @@ void addline()
     }
 
     printf("请输入新铁路线的信息:\n");
-    stdin_flush();
     printf("Lid:\n");
     scanf("%d",&lines[line_count].Lid);
     stdin_flush();
@@ -217,6 +233,7 @@ void addline()
     stdin_flush();
     printf("sign:\n");
     scanf("%s",lines[line_count].sign);
+    stdin_flush();
     fprintf(fp,"%d   %s   %d   %d   %d   %s", lines[line_count].Lid,lines[line_count].LName,lines[line_count].start_id,lines[line_count].end_id,lines[line_count].dist,lines[line_count].sign);//将新的铁路信息输出到文件中
     fclose(fp);
     printf("已成功添加新的铁路线路！");
@@ -317,7 +334,6 @@ int main()
 
     while(1) {
         int menu;
-        char con;
         printf("\n              The railway system         \n");
         printf("***************************************************\n");
         printf("                        1、添加新的车站\n");
@@ -339,52 +355,23 @@ int main()
             do {
                 addview();
                 addway();
-                stdin_flush();
-                printf("是否想要继续（y/n）:");
-                scanf("%c",&con);
-                while(con=='y') {
-                    addway();
-                    stdin_flush();
-                    printf("是否想要继续（y/n）:");
-                    scanf("%c",&con);
-                }
-                stdin_flush();
-                printf("是否想要继续（y/n）:");
-                scanf("%c",&con);
-            } while(con=='y');
+            } while(user_says_yes());
             break;
         case 2:
-            while(1) {
+            do {
                 addline();
-                stdin_flush();
-                printf("是否想要继续（y/n）:");
-                scanf("%c",&con);
-                while(con=='y') {
-
-                    addline();
-                    stdin_flush();
-                    printf("是否想要继续（y/n）:");
-                    scanf("%c",&con);
-                }
-                break;
-            }
+            } while(user_says_yes());
             break;
         case 3:
             do {
                 search();
-                stdin_flush();
-                printf("是否想要继续（y/n）:");
-                scanf("%c",&con);
-            } while(con=='y');
+            } while(user_says_yes());
 
             break;
         case 4:
             do {
                 floyed();
-                stdin_flush();
-                printf("是否想要继续（y/n）:");
-                scanf("%c",&con);
-            } while(con=='y');
+            } while(user_says_yes());
 
             break;
         case 5: {
