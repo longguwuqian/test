@@ -60,11 +60,12 @@ void readviews()
     }
     printf("id            name              code           shortname        LName   \n");
 
-    for(i=0; fread(&views[i],sizeof(struct  view_info),1,fp)!=0; i++) {
+    for(i=0; fread(&views[i],sizeof(struct  view_info),1,fp)!=0; i++) {//文件中的信息赋给station_info结构体，并且把车站信息输出到终端
         printf("%d%-10s%d%-10s%-10s\n",views[i].id,views[i].name,views[i].code,views[i].shortname,views[i].LName);
         view_count=i+1;
-        fclose(fp);//文件中的信息赋给station_info结构体，并且把车站信息输出到终端
+
     }
+    fclose(fp);
 }
 void readways()
 {
